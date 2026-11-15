@@ -48,6 +48,32 @@ def load_public_channels() -> list[dict[str, str]]:
         logger.exception("Unable to load channels.json")
         return []
 
+def load_single_private_channels() -> list[dict[str, str]]:
+    """تحميل القنوات الخاصة المعروضة في زر الاشتراك بقناة خاصة واحدة."""
+    if not CHANNELS_FILE.exists():
+        return []
+    try:
+        with CHANNELS_FILE.open("r", encoding="utf-8") as channels_file:
+            data = json.load(channels_file)
+
+        channels = (
+            data.get("single_private_channels", [])
+            if isinstance(data, dict)
+            else []
+        )
+        if not isinstance(channels, list):
+            return []
+
+        return [
+            channel for channel in channels
+            if isinstance(channel, dict)
+            and isinstance(channel.get("name"), str)
+            and isinstance(channel.get("url"), str)
+        ]
+    except (OSError, json.JSONDecodeError):
+        logger.exception("Unable to load single private channels from channels.json")
+        return []
+
 
 CFG = load_config()
 TOKEN = str(CFG.get("TOKEN") or "")
