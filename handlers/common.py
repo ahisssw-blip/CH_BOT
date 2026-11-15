@@ -13,7 +13,11 @@ from telegram.error import TelegramError
 from telegram.ext import Application, ContextTypes
 from telegram.helpers import escape_markdown
 
-from config import ADMIN_IDS, BACKUP_CH_ID, CHANNEL_ID, DB_PATH, BTNS, load_public_channels
+from config import (
+    ADMIN_IDS, BACKUP_CH_ID, CHANNEL_ID, DB_PATH, BTNS,
+    load_public_channels, load_single_private_channels,
+)
+
 from database import (
     db_backup_to, db_broadcast_progress, db_finish_broadcast,
     db_pending_broadcasts, db_mark_user_blocked,
@@ -139,8 +143,25 @@ def build_channels_keyboard(include_back: bool = False) -> InlineKeyboardMarkup:
             kbd.append(row)
 
     # زر عريض للاشتراك بالقنوات الخاصة
+    # زر عريض للفاصل
     kbd.append([InlineKeyboardButton("👇👇👇👇👇👇👇👇👇", callback_data="noop")])
-    kbd.append([InlineKeyboardButton("🔴الإشـتـراك بـالـقـنـوات الـخـاصـة🔴", callback_data="private_sub")])
+
+    # زر الاشتراك بقناة خاصة واحدة
+    kbd.append([
+        InlineKeyboardButton(
+            "الاشتراك بقناة خاصة واحدة",
+            callback_data="single_private_sub"
+        )
+    ])
+
+    # زر الاشتراك بالقنوات الخاصة المدفوعة
+    kbd.append([
+        InlineKeyboardButton(
+            "🔴الإشـتـراك بـالـقـنـوات الـخـاصـة🔴",
+            callback_data="private_sub"
+        )
+    ])
+
 
     if include_back:
         kbd.append([InlineKeyboardButton(BTNS.get("btn_back", "🔙 رجوع"), callback_data="main_menu")])
