@@ -7,7 +7,10 @@ from telegram.error import TelegramError
 from telegram.ext import ContextTypes
 from telegram.helpers import escape_markdown
 
-from config import ADMIN_IDS, SUPPORT, SUBS, TELEGRAM_CONTACT, WALLETS, BTNS
+from config import (
+    ADMIN_IDS, SUPPORT, SUBS, TELEGRAM_CONTACT, WALLETS, BTNS,
+    load_single_private_channels,
+)
 from database import (
     db_upsert_user, is_user_banned, db_set_banned,
     db_broadcast_targets, db_create_broadcast,
@@ -59,8 +62,8 @@ async def cmd_help(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "● ويمكنك أيضاً الإشتراك بقنواتنا الخاصة المدفوعة.\n\n"
             "‏▬▬▬▬▬▬▬▬▬▬▬‏▬‏▬\n\n"
             "🟢 *للتواصل معنا بشكل مباشر:* 👇🏼👇🏼\n\n"
-            "● @xSyrb , @xSyrp . \n\n"
-            "✅"
+            "● @VNBNV . \n\n"
+            "🔰"
         )
     await update.message.reply_text(help_text, parse_mode=ParseMode.MARKDOWN)
 
@@ -93,6 +96,31 @@ async def show_private_sub_menu(update: Update, context: ContextTypes.DEFAULT_TY
     else:
         await update.message.reply_text(text, reply_markup=kbd, parse_mode=ParseMode.MARKDOWN)
 
+async def show_single_private_sub(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """عرض شرح وروابط القنوات الخاصة المحددة لهذا الخيار."""
+    channels = load_single_private_channels()
+
+    keyboard = [
+        [InlineKeyboardButton(channel["name"], url=channel["url"])]
+        for channel in channels
+    ]
+
+    keyboard.append([
+        InlineKeyboardButton("🔙 رجوع", callback_data="back_to_start")
+    ])
+
+    text = TEXT["single_private_intro"]
+
+    if update.callback_query:
+        await update.callback_query.edit_message_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+    else:
+        await update.message.reply_text(
+            text,
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
 
 async def show_main_menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -131,6 +159,9 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif data == "private_sub":
         await show_private_sub_menu(update, context)
+
+    elif data == "single_private_sub":
+        await show_single_private_sub(update, context)
 
     elif data == "sub_details":
         details = SUBS.get("VIP", {}).get("details", "اشتراك VIP يمنحك الوصول لكافة القنوات الخاصة بشكل دائم.")
