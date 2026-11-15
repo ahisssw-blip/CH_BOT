@@ -99,15 +99,37 @@ async def show_private_sub_menu(update: Update, context: ContextTypes.DEFAULT_TY
 async def show_single_private_sub(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """عرض شرح وروابط القنوات الخاصة المحددة لهذا الخيار."""
     channels = load_single_private_channels()
+    keyboard = []
 
-    keyboard = [
-        [InlineKeyboardButton(channel["name"], url=channel["url"])]
-        for channel in channels
-    ]
+    row = []
+    for channel in channels:
+        row.append(
+            InlineKeyboardButton(
+                channel["name"],
+                url=channel["url"]
+            )
+        )
 
+        if len(row) == 3:
+            keyboard.append(row)
+            row = []
+
+    if row:
+        keyboard.append(row)
+
+    # زر مختارات/نخبة بعرض سطر مستقل
+    keyboard.append([
+        InlineKeyboardButton(
+            "🔥مختارات/نخبة🔥",
+            url="https://t.me/+7Ho7TCzT0icyZGU0"
+        )
+    ])
+
+    # زر الرجوع في سطر مستقل
     keyboard.append([
         InlineKeyboardButton("🔙 رجوع", callback_data="back_to_start")
     ])
+
 
     text = TEXT["single_private_intro"]
 
