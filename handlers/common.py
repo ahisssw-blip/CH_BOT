@@ -145,6 +145,7 @@ def build_channels_keyboard(include_back: bool = False) -> InlineKeyboardMarkup:
     # زر عريض للاشتراك بالقنوات الخاصة
     # زر عريض للفاصل
     kbd.append([InlineKeyboardButton("👇👇👇👇👇👇👇👇👇", callback_data="noop")])
+
     # زر الاشتراك بالقنوات الخاصة المدفوعة
     kbd.append([
         InlineKeyboardButton(
