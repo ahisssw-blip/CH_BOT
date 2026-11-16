@@ -131,7 +131,7 @@ async def show_single_private_sub(update: Update, context: ContextTypes.DEFAULT_
 
     # زر الرجوع في سطر مستقل
     keyboard.append([
-        InlineKeyboardButton("🔙 رجوع", callback_data="back_to_start")
+        InlineKeyboardButton("🔙 رجوع", callback_data="private_sub")
     ])
 
 
