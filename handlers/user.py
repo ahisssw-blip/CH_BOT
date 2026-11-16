@@ -34,6 +34,9 @@ async def cmd_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(TEXT["banned_notice"])
         return
 
+    if context.args and context.args[0] == "private_channels":
+        await show_single_private_sub(update, context)
+        return
     # ─── الشاشة الرئيسية: ترحيب + قنوات عامة فورية ───
     welcome_text = TEXT["welcome"].format(first_name=escape_markdown(user.first_name or ""))
     await update.message.reply_text(
@@ -76,6 +79,7 @@ async def show_private_sub_menu(update: Update, context: ContextTypes.DEFAULT_TY
 
     kbd = InlineKeyboardMarkup([
         [InlineKeyboardButton("🪙  الدفع عن طريق USDT  🪙", callback_data="meth_usdt")],
+        [InlineKeyboardButton("القنوات الخاصة", callback_data="private_channels")],
         [InlineKeyboardButton("📝  الــتــفــاصــيــل  📝", callback_data="sub_details")],
         [InlineKeyboardButton("💬  تواصل معنا لأي طريقة دفع أخرى  💬", url=TELEGRAM_CONTACT)],
         [InlineKeyboardButton(BTNS.get("btn_back", "🔙 رجــوع"), callback_data="back_to_start")]
@@ -182,7 +186,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "private_sub":
         await show_private_sub_menu(update, context)
 
-    elif data == "single_private_sub":
+    elif data == "private_channels":
         await show_single_private_sub(update, context)
 
     elif data == "sub_details":
